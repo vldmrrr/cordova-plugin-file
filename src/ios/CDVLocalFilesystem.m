@@ -550,11 +550,12 @@
                 if (bSrcIsDir && ![self canCopyMoveSrc:srcFullPath ToDestination:newFileSystemPath]) {
                     // can't copy dir into self
                     errCode = INVALID_MODIFICATION_ERR;
-                } else if (bNewExists) {
-                    // the full destination should NOT already exist if a copy
-                    errCode = PATH_EXISTS_ERR;
                 } else {
-                    bSuccess = [fileMgr copyItemAtPath:srcFullPath toPath:newFileSystemPath error:&error];
+                    bSuccess = YES;
+                    if (bNewExists)
+                        bSuccess = [fileMgr removeItemAtPath:newFileSystemPath error:&error];
+                    if (bSuccess)
+                        bSuccess = [fileMgr copyItemAtPath:srcFullPath toPath:newFileSystemPath error:&error];
                 }
             } else { // move
                 // iOS requires that destination must not exist before calling moveTo
